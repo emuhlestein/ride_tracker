@@ -12,13 +12,25 @@ import com.pluralsight.model.Ride;
 import org.junit.Test;
 
 public class RestControllerTest {
+	@Test(timeout=3000)
+	public void testCreateRides() {
+		RestTemplate restTemplate = new RestTemplate();
+
+		Ride ride = new Ride();
+		ride.setName("Bobsled trail ride");
+		ride.setDuration(35);
+
+		ride = restTemplate.postForObject("http://localhost:8080/ride", ride, Ride.class);
+
+		System.out.println("Ride: " + ride);
+	}
 
 	@Test(timeout=3000)
 	public void testGetRides() {
 		RestTemplate restTemplate = new RestTemplate();
 
 		ResponseEntity<List<Ride>> ridesResponse = restTemplate.exchange(
-				"http://localhost:8080/ride_tracker/rides", HttpMethod.GET,
+				"http://localhost:8080/rides", HttpMethod.GET,
 				null, new ParameterizedTypeReference<List<Ride>>() {
 				});
 		List<Ride> rides = ridesResponse.getBody();
@@ -26,5 +38,14 @@ public class RestControllerTest {
 		for (Ride ride : rides) {
 			System.out.println("Ride name: " + ride.getName());
 		}
+	}
+
+	@Test(timeout = 3000)
+	public void getGetRide() {
+		RestTemplate restTemplate = new RestTemplate();
+
+		Ride ride = restTemplate.getForObject("http://localhost:8080/ride/1", Ride.class);
+
+		System.out.println("Ride name: " + ride.getName());
 	}
 }
