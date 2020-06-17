@@ -41,11 +41,38 @@ public class RestControllerTest {
 	}
 
 	@Test(timeout = 3000)
-	public void getGetRide() {
+	public void testGetRide() {
 		RestTemplate restTemplate = new RestTemplate();
 
 		Ride ride = restTemplate.getForObject("http://localhost:8080/ride/1", Ride.class);
 
 		System.out.println("Ride name: " + ride.getName());
+	}
+
+	@Test(timeout = 3000)
+	public void testUpdateRide() {
+		RestTemplate restTemplate = new RestTemplate();
+
+		Ride ride = restTemplate.getForObject("http://localhost:8080/ride/1", Ride.class);
+
+		ride.setDuration(ride.getDuration()+1);
+
+		restTemplate.put("http://localhost:8080/ride", ride);
+
+		System.out.println("Ride name: " + ride.getName());
+	}
+
+	@Test(timeout = 3000)
+	public void testBatchUpdate() {
+		RestTemplate restTemplate = new RestTemplate();
+
+		restTemplate.getForObject("http://localhost:8080/batch", Object.class);
+	}
+
+	@Test(timeout = 3000)
+	public void testDelete() {
+		RestTemplate restTemplate = new RestTemplate();
+
+		restTemplate.delete("http://localhost:8080/ride/1", Object.class);
 	}
 }

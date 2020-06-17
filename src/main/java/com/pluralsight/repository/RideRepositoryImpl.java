@@ -13,6 +13,7 @@ import com.pluralsight.repository.util.RideRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -55,6 +56,31 @@ public class RideRepositoryImpl implements RideRepository {
 	public List<Ride> getRides() {
 		List<Ride> rides = jdbcTemplate.query("select * from ride", new RideRowMapper());
 		return rides;
+	}
+
+	@Override
+	public Ride updateRide(Ride ride) {
+		jdbcTemplate.update("update ride set name = ?, duration = ? where id = ?",
+				ride.getName(), ride.getDuration(), ride.getId());
+		return ride;
+	}
+
+	@Override
+	public void updateRides(List<Object[]> pairs) {
+		// order matters
+		jdbcTemplate.batchUpdate("update ride set ride_date = ? where id = ?", pairs);
+	}
+
+	@Override
+	public void deleteRide(Integer id) {
+		jdbcTemplate.update("delete from ride where id = ?", id);
+
+		// Use Named parameters to avoid having a bunch of ? in the sql statement
+		// This only needs to be created one time
+//		NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+//		Map<String, Object> paramMap = new HashMap<>();
+//		paramMap.put("id", id);
+//		namedTemplate.update("delete from ride where id = :id", paramMap);
 	}
 
 	private void createRide1(Ride ride) {
